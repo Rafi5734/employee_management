@@ -6,7 +6,8 @@ import { Select, SelectItem } from "@heroui/react";
 import { useDisclosure } from "@heroui/react";
 import CreateEmployeeModal from "./createEmployeeModal/CreateEmployeeModal";
 import { Tooltip } from "@heroui/tooltip";
-
+import EditIcon from "../../assets/icons/EditIcon";
+import DeleteIcon from "../../assets/icons/DeleteIcon";
 
 export const animals = [
   { key: "cat", label: "Cat" },
@@ -35,7 +36,7 @@ export default function TableData() {
         Employee Data Management
       </p>
 
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 xs:grid-cols-1 gap-4">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-5">
         <Input label="Search an employee" type="text" />
         <div></div>
         <div className="flex justify-end gap-3">
@@ -67,7 +68,7 @@ export default function TableData() {
       </div>
 
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-5">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" className="px-6 py-3">
@@ -83,7 +84,14 @@ export default function TableData() {
                 Email
               </th>
               <th scope="col" className="px-6 py-3">
+                Department
+              </th>
+
+              <th scope="col" className="px-6 py-3">
                 Address
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Status
               </th>
               <th scope="col" className="px-6 py-3">
                 <span className="">Actions</span>
@@ -102,13 +110,28 @@ export default function TableData() {
               <td className="px-6 py-4">Laptop</td>
               <td className="px-6 py-4">$2999</td>
               <td className="px-6 py-4">$2999</td>
+              <td className="px-6 py-4">$2999</td>
+              <td className="px-6 py-4">$2999</td>
               <td className="px-6 py-4">
-                <a
-                  href="#"
-                  className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                >
-                  Edit
-                </a>
+                <Tooltip content="Edit" color="success">
+                  <Button
+                    onPress={onOpen}
+                    size="sm"
+                    isIconOnly
+                    startContent={<EditIcon />}
+                    color="success"
+                    className="me-3"
+                  ></Button>
+                </Tooltip>
+                <Tooltip content="Delete" color="danger">
+                  <Button
+                    onPress={onOpen}
+                    size="sm"
+                    isIconOnly
+                    startContent={<DeleteIcon />}
+                    color="danger"
+                  ></Button>
+                </Tooltip>
               </td>
             </tr>
           </tbody>
