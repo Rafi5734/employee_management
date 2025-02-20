@@ -8,13 +8,13 @@ export const employeeSlice = createApi({
   tagTypes: ["employees"],
   endpoints: (builder) => ({
     createEmployee: builder.mutation({
-      query: (employee) => ({
+      query: (employeeData) => ({
         url: "/employees",
         headers: {
           "content-type": "application/json",
         },
         method: "POST",
-        body: employee,
+        body: employeeData,
       }),
       invalidatesTags: ["employees"],
     }),
@@ -43,7 +43,7 @@ export const employeeSlice = createApi({
     }),
 
     deleteEmployee: builder.mutation({
-      query: ({ employeeId }) => ({
+      query: (employeeId) => ({
         url: `/employees/${employeeId}`,
         method: "DELETE",
       }),
@@ -57,5 +57,5 @@ export const {
   useDeleteEmployeeMutation,
   useGetAllemployeeQuery,
   useGetSingleEmployeeQuery,
-  useUpdateEmployeeMutation
+  useUpdateEmployeeMutation,
 } = employeeSlice;
