@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Input } from "@heroui/input";
 import { Button } from "@heroui/button";
 import AddIcon from "../../assets/icons/AddIcon";
-import { Chip, Image, Select, SelectItem } from "@heroui/react";
+import { Chip, Image, Select, SelectItem, Pagination } from "@heroui/react";
 import { useDisclosure } from "@heroui/react";
 import CreateEmployeeModal from "./createEmployeeModal/CreateEmployeeModal";
 import { Tooltip } from "@heroui/tooltip";
@@ -25,41 +25,46 @@ export const statusOptions = [
 ];
 
 export default function TableData() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [employeeId, setEmployeeId] = useState();
-  //triggered for create employee modal.
 
+  // Modal controls
   const {
     isOpen: createEmployeeModalOpen,
     onOpen: createEmployeeOnOpen,
     onOpenChange: createEmployeeOnOpenChange,
   } = useDisclosure();
 
-  //triggered for update employee modal.
   const {
     isOpen: updateEmployeeModalOpen,
     onOpen: updateEmployeeOnOpen,
     onOpenChange: updateEmployeeOnOpenChange,
   } = useDisclosure();
 
+  // Search and filter states
   const [searchValue, setSearchValue] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  // API hooks
   const { data: getAllEmployeeData, isLoading: employeeDataLoader } =
     useGetAllemployeeQuery();
   const [deleteEmployee, { isLoading: deleteEmployeeLoader }] =
     useDeleteEmployeeMutation();
 
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-
+  // Debounce search input
   useEffect(() => {
     const handler = debounce((value) => {
       setDebouncedSearch(value);
+      setCurrentPage(1); // Reset to first page on search change
     }, 500);
 
     handler(searchValue);
     return () => handler.cancel();
   }, [searchValue]);
 
+  // Filter employees
   const filteredEmployees = useMemo(() => {
     if (!getAllEmployeeData?.employees) return [];
 
@@ -81,6 +86,17 @@ export default function TableData() {
       })
       .reverse();
   }, [getAllEmployeeData, debouncedSearch, statusFilter]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = filteredEmployees.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, itemsPerPage]);
 
   const handleDeleteEmployee = async (employeeId) => {
     Swal.fire({
@@ -126,17 +142,17 @@ export default function TableData() {
         Employee Data Management
       </p>
 
-      {/* 🔍 Search & Filter */}
+      {/* Search & Filter Section */}
       <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-5 mt-10">
         <Input
           label="Search an employee"
           type="text"
           value={searchValue}
           size="sm"
-          onValueChange={setSearchValue} // Updates the search term
+          onValueChange={setSearchValue}
         />
-        <div></div>
-        <div className="flex justify-end gap-3">
+
+        <div className="flex justify-end gap-3 col-span-2">
           <Tooltip content="Create an employee">
             <Button
               onPress={createEmployeeOnOpen}
@@ -144,8 +160,9 @@ export default function TableData() {
               isIconOnly
               startContent={<AddIcon />}
               color="primary"
-            ></Button>
+            />
           </Tooltip>
+
           <CreateEmployeeModal
             createEmployeeModalOpen={createEmployeeModalOpen}
             createEmployeeOnOpenChange={createEmployeeOnOpenChange}
@@ -183,7 +200,7 @@ export default function TableData() {
             </tr>
           </thead>
           <tbody>
-            {filteredEmployees.map((employee) => (
+            {currentItems.map((employee) => (
               <tr
                 key={employee._id}
                 className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -231,7 +248,7 @@ export default function TableData() {
                       onClick={() => setEmployeeId(employee?._id)}
                       startContent={<EditIcon />}
                       color="success"
-                    ></Button>
+                    />
                   </Tooltip>
                   {deleteEmployeeLoader ? (
                     <Button isLoading color="primary">
@@ -246,7 +263,7 @@ export default function TableData() {
                         startContent={<DeleteIcon />}
                         color="danger"
                         className="ms-1"
-                      ></Button>
+                      />
                     </Tooltip>
                   )}
                 </td>
@@ -259,6 +276,57 @@ export default function TableData() {
             />
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex flex-col justify-center items-center mt-10 mb-10 gap-5">
+        <div className="flex items-center gap-3">
+          <span className="text-small">Items per page:</span>
+          <Select
+            className="w-20"
+            size="sm"
+            selectedKeys={new Set([itemsPerPage.toString()])}
+            onSelectionChange={(keys) => {
+              setItemsPerPage(Number([...keys][0]));
+            }}
+          >
+            {[1, 5, 10, 20, 50].map((size) => (
+              <SelectItem key={size.toString()} value={size}>
+                {size.toString()}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+
+        <Pagination
+          color="secondary"
+          page={currentPage}
+          total={totalPages}
+          onChange={setCurrentPage}
+        />
+
+        <div className="flex gap-2">
+          <Button
+            color="secondary"
+            size="sm"
+            variant="flat"
+            onPress={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+            isDisabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            color="secondary"
+            size="sm"
+            variant="flat"
+            onPress={() =>
+              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+            }
+            isDisabled={currentPage === totalPages || totalPages === 0}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );
