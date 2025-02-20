@@ -10,7 +10,7 @@ import {
 } from "@heroui/react";
 import { useCreateEmployeeMutation } from "../../../slices/EmployeeSlice";
 import Swal from "sweetalert2";
-export default function CreateEmployeeModal({ isOpen, onOpenChange }) {
+export default function CreateEmployeeModal({ createEmployeeModalOpen, createEmployeeOnOpenChange }) {
   const [employeeData, setEmployeeData] = useState({
     employeeName: "",
     employeeEmail: "",
@@ -34,7 +34,7 @@ export default function CreateEmployeeModal({ isOpen, onOpenChange }) {
     e.preventDefault();
     try {
       const result = await createEmployee(employeeData);
-      console.log(result.error?.data?.message);
+      // console.log(result.error?.data?.message);
       if (result?.data) {
         Swal.fire({
           title: "Success",
@@ -61,8 +61,8 @@ export default function CreateEmployeeModal({ isOpen, onOpenChange }) {
     <div>
       <Modal
         size="xl"
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
+        isOpen={createEmployeeModalOpen}
+        onOpenChange={createEmployeeOnOpenChange}
         scrollBehavior="outside"
       >
         <ModalContent>

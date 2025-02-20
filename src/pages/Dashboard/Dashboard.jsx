@@ -17,22 +17,22 @@ export default function Dashboard() {
       <p className="inter text-center font-bold text-3xl mt-10 underline">
         All Employee Profile
       </p>
-      <div className="grid lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 xs:grid-cols-1 gap-4">
+      <div className="grid lg:grid-cols-4 md:grid-cols-2 sm:grid-cols-1 xs:grid-cols-1 gap-4">
         {getAllEmployeeData?.employees
           ?.slice()
           .reverse()
           .map((employee) => (
             <div className="w-full mx-4 sm:mx-auto md:mx-auto lg:mx-auto xl:mx-auto mt-12 bg-white shadow-xl rounded-lg text-gray-900 transition-transform transform hover:scale-105 hover:shadow-2xl duration-300">
-              <div className="rounded-t-lg h-32 overflow-hidden">
+              <div className="rounded-t-lg h-40 overflow-hidden">
                 <Image
                   className="object-cover object-top w-full z-30"
                   src={employee?.employeeCoverImage}
                   alt="Cover"
                 />
               </div>
-              <div className="mx-auto w-32 h-32 relative -mt-16 border-4 border-white rounded-full overflow-hidden">
+              <div className="mx-auto w-40 h-40 relative -mt-24 border-4 border-white rounded-full overflow-hidden">
                 <Image
-                  className="object-cover w-full h-32 z-40"
+                  className="object-cover w-40 h-40 z-40"
                   src={employee?.employeeProfilePicture}
                   alt="Profile"
                 />

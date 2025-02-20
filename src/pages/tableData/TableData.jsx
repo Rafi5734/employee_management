@@ -14,7 +14,8 @@ import {
 } from "../../slices/EmployeeSlice";
 import Loader from "../../utils/loader/Loader";
 import Swal from "sweetalert2";
-import { debounce } from "lodash"; // Import debounce from lodash
+import { debounce } from "lodash";
+import UpdateEmployeeModal from "./updateEmployeeModal/UpdateEmployeeModal";
 
 export const statusOptions = [
   { key: "All", label: "All" },
@@ -24,34 +25,46 @@ export const statusOptions = [
 ];
 
 export default function TableData() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [employeeId, setEmployeeId] = useState();
+  //triggered for create employee modal.
+
+  const {
+    isOpen: createEmployeeModalOpen,
+    onOpen: createEmployeeOnOpen,
+    onOpenChange: createEmployeeOnOpenChange,
+  } = useDisclosure();
+
+  //triggered for update employee modal.
+  const {
+    isOpen: updateEmployeeModalOpen,
+    onOpen: updateEmployeeOnOpen,
+    onOpenChange: updateEmployeeOnOpenChange,
+  } = useDisclosure();
+
   const [searchValue, setSearchValue] = useState("");
-  const [statusFilter, setStatusFilter] = useState("All"); // Default: Show all employees
+  const [statusFilter, setStatusFilter] = useState("All");
 
   const { data: getAllEmployeeData, isLoading: employeeDataLoader } =
     useGetAllemployeeQuery();
   const [deleteEmployee, { isLoading: deleteEmployeeLoader }] =
     useDeleteEmployeeMutation();
 
-  // ✅ Debounced search input
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
     const handler = debounce((value) => {
       setDebouncedSearch(value);
-    }, 500); // 500ms delay
+    }, 500);
 
     handler(searchValue);
     return () => handler.cancel();
   }, [searchValue]);
 
-  // ✅ Memoized filtered data
   const filteredEmployees = useMemo(() => {
     if (!getAllEmployeeData?.employees) return [];
 
     return getAllEmployeeData.employees
       .filter((employee) => {
-        // 🔍 Search by Name or Email (case insensitive)
         const searchMatch =
           debouncedSearch === "" ||
           employee?.employeeName
@@ -61,7 +74,6 @@ export default function TableData() {
             ?.toLowerCase()
             .includes(debouncedSearch.toLowerCase());
 
-        // 🔍 Filter by Status
         const statusMatch =
           statusFilter === "All" || employee?.employeeStatus === statusFilter;
 
@@ -110,30 +122,34 @@ export default function TableData() {
 
   return (
     <div className="inter ps-4 pe-4">
-      <p className="inter text-center font-bold text-3xl mt-10 mb-5 underline">
+      <p className="inter text-center font-bold text-3xl mt-5 mb-5 underline">
         Employee Data Management
       </p>
 
       {/* 🔍 Search & Filter */}
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-5">
+      <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-5 mt-10">
         <Input
           label="Search an employee"
           type="text"
           value={searchValue}
+          size="sm"
           onValueChange={setSearchValue} // Updates the search term
         />
         <div></div>
         <div className="flex justify-end gap-3">
           <Tooltip content="Create an employee">
             <Button
-              onPress={onOpen}
+              onPress={createEmployeeOnOpen}
               size="lg"
               isIconOnly
               startContent={<AddIcon />}
               color="primary"
             ></Button>
           </Tooltip>
-          <CreateEmployeeModal isOpen={isOpen} onOpenChange={onOpenChange} />
+          <CreateEmployeeModal
+            createEmployeeModalOpen={createEmployeeModalOpen}
+            createEmployeeOnOpenChange={createEmployeeOnOpenChange}
+          />
 
           <Select
             className="max-w-xs"
@@ -206,24 +222,41 @@ export default function TableData() {
                     {employee?.employeeStatus}
                   </Chip>
                 </td>
-                <td className="px-6 py-4">
-                  <Button
-                    size="sm"
-                    isIconOnly
-                    startContent={<EditIcon />}
-                    color="success"
-                    className="me-3"
-                  ></Button>
-                  <Button
-                    onClick={() => handleDeleteEmployee(employee._id)}
-                    size="sm"
-                    isIconOnly
-                    startContent={<DeleteIcon />}
-                    color="danger"
-                  ></Button>
+                <td className="px-1 py-1">
+                  <Tooltip content="Edit" color="success">
+                    <Button
+                      size="sm"
+                      onPress={updateEmployeeOnOpen}
+                      isIconOnly
+                      onClick={() => setEmployeeId(employee?._id)}
+                      startContent={<EditIcon />}
+                      color="success"
+                    ></Button>
+                  </Tooltip>
+                  {deleteEmployeeLoader ? (
+                    <Button isLoading color="primary">
+                      Loading
+                    </Button>
+                  ) : (
+                    <Tooltip content="Delete" color="danger">
+                      <Button
+                        onClick={() => handleDeleteEmployee(employee._id)}
+                        size="sm"
+                        isIconOnly
+                        startContent={<DeleteIcon />}
+                        color="danger"
+                        className="ms-1"
+                      ></Button>
+                    </Tooltip>
+                  )}
                 </td>
               </tr>
             ))}
+            <UpdateEmployeeModal
+              employeeId={employeeId}
+              updateEmployeeOnOpenChange={updateEmployeeOnOpenChange}
+              updateEmployeeModalOpen={updateEmployeeModalOpen}
+            />
           </tbody>
         </table>
       </div>

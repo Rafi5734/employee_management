@@ -30,14 +30,14 @@ export const employeeSlice = createApi({
     }),
 
     updateEmployee: builder.mutation({
-      query: ({ updatedEmployeeData, employeeId }) => ({
+      query: ({ formData, employeeId }) => ({
         url: `/employees/${employeeId}`,
         headers: {
           "content-type": "application/json",
-          Accept: "application/json", // Add Accept header
+          Accept: "application/json",
         },
         method: "PUT",
-        body: updatedEmployeeData,
+        body: formData,
       }),
       invalidatesTags: ["employees"],
     }),
