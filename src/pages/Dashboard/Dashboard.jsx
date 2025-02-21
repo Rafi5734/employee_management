@@ -22,7 +22,10 @@ export default function Dashboard() {
           ?.slice()
           .reverse()
           .map((employee) => (
-            <div key={employee?._id} className="mb-5 mx-4 sm:mx-auto md:mx-auto lg:mx-auto xl:mx-auto bg-white shadow-xl rounded-lg text-gray-900 transition-transform transform hover:scale-105 hover:shadow-2xl duration-300">
+            <div
+              key={employee?._id}
+              className="mb-5 mx-4 sm:mx-auto md:mx-auto lg:mx-auto xl:mx-auto bg-white shadow-xl rounded-lg text-gray-900 transition-transform transform hover:scale-105 hover:shadow-2xl duration-300"
+            >
               <div className="rounded-t-lg h-40 overflow-hidden">
                 <Image
                   className="object-cover object-top  z-30"
@@ -48,7 +51,11 @@ export default function Dashboard() {
                 </li>
                 <li className="flex flex-col items-center justify-center">
                   <LocationIcon />
-                  <div>{employee?.employeeAddress}</div>
+                  <div>
+                    {employee?.employeeAddress?.length > 15
+                      ? `${employee.employeeAddress.slice(0, 20)}...`
+                      : employee?.employeeAddress}
+                  </div>
                 </li>
               </ul>
               <div className="p-4 border-t mx-8 mt-2 flex justify-center items-center">

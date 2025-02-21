@@ -35,6 +35,26 @@ export default function CreateEmployeeModal({
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(employeeData.employeeEmail)) {
+      Swal.fire({
+        title: "Error",
+        text: "Email is not validate.",
+        icon: "error",
+      });
+      return;
+    }
+
+    if (employeeData.employeePhoneNumber.length > 11) {
+      Swal.fire({
+        title: "Error",
+        text: "Phone number cannot exceed 11 digits.",
+        icon: "error",
+      });
+      return;
+    }
     try {
       const result = await createEmployee(employeeData);
       // console.log(result.error?.data?.message);
@@ -58,7 +78,6 @@ export default function CreateEmployeeModal({
         icon: "error",
       });
     }
-    console.log("employeeData", employeeData);
   };
   return (
     <div>
@@ -138,15 +157,30 @@ export default function CreateEmployeeModal({
                       Employee email
                     </label>
                     <input
-                      type="employeeEmail"
-                      id="email"
+                      type="email"
+                      id="employeeEmail"
                       name="employeeEmail"
                       value={employeeData?.employeeEmail}
                       onChange={handleInputChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className={`bg-gray-50 border ${
+                        employeeData?.employeeEmail &&
+                        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                          employeeData?.employeeEmail
+                        )
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                       placeholder="name@email.com"
                       required
                     />
+                    {employeeData?.employeeEmail &&
+                      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                        employeeData?.employeeEmail
+                      ) && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Invalid email format.
+                        </p>
+                      )}
                   </div>
                   <div className="mb-5">
                     <label
@@ -161,10 +195,19 @@ export default function CreateEmployeeModal({
                       name="employeePhoneNumber"
                       value={employeeData?.employeePhoneNumber}
                       onChange={handleInputChange}
-                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                      className={`bg-gray-50 border ${
+                        employeeData?.employeePhoneNumber.length > 11
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      } text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                       placeholder="Enter the employee phone number"
                       required
                     />
+                    {employeeData?.employeePhoneNumber.length > 11 && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Phone number cannot exceed 11 digits.
+                      </p>
+                    )}
                   </div>
                   <div className="mb-5">
                     <label
