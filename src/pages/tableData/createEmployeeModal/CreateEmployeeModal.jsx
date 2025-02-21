@@ -10,7 +10,10 @@ import {
 } from "@heroui/react";
 import { useCreateEmployeeMutation } from "../../../slices/EmployeeSlice";
 import Swal from "sweetalert2";
-export default function CreateEmployeeModal({ createEmployeeModalOpen, createEmployeeOnOpenChange }) {
+export default function CreateEmployeeModal({
+  createEmployeeModalOpen,
+  createEmployeeOnOpenChange,
+}) {
   const [employeeData, setEmployeeData] = useState({
     employeeName: "",
     employeeEmail: "",
@@ -219,13 +222,19 @@ export default function CreateEmployeeModal({ createEmployeeModalOpen, createEmp
                       placeholder="Write employee full address"
                     ></textarea>
                   </div>
-                  <div className="flex justify-end gap-3">
+                  <div className="flex flex-row justify-end gap-3 pb-4">
                     <Button color="danger" variant="light" onPress={onClose}>
                       Close
                     </Button>
-                    <Button type="submit" color="primary">
-                      Create
-                    </Button>
+                    {employeeCreateLoader ? (
+                      <Button isLoading color="primary">
+                        Loading
+                      </Button>
+                    ) : (
+                      <Button type="submit" color="primary">
+                        Create
+                      </Button>
+                    )}
                   </div>
                 </form>
               </ModalBody>

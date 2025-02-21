@@ -57,7 +57,7 @@ export default function TableData() {
   useEffect(() => {
     const handler = debounce((value) => {
       setDebouncedSearch(value);
-      setCurrentPage(1); // Reset to first page on search change
+      setCurrentPage(1);
     }, 500);
 
     handler(searchValue);
@@ -137,22 +137,25 @@ export default function TableData() {
   if (employeeDataLoader) return <Loader />;
 
   return (
-    <div className="inter ps-4 pe-4">
+    <div className="inter ps-4 pe-4 w-full">
       <p className="inter text-center font-bold text-3xl mt-5 mb-5 underline">
         Employee Data Management
       </p>
 
       {/* Search & Filter Section */}
-      <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 xs:grid-cols-1 gap-4 mb-5 mt-10">
-        <Input
-          label="Search an employee"
-          type="text"
-          value={searchValue}
-          size="sm"
-          onValueChange={setSearchValue}
-        />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-5 mt-10 max-w-full">
+        <div className="col-span-1 lg:col-span-1 w-full">
+          <Input
+            label="Search an employee"
+            type="text"
+            value={searchValue}
+            size="sm"
+            className="w-full"
+            onValueChange={setSearchValue}
+          />
+        </div>
 
-        <div className="flex justify-end gap-3 col-span-2">
+        <div className="flex flex-row justify-end gap-3 col-span-1 lg:col-span-2 w-full">
           <Tooltip content="Create an employee">
             <Button
               onPress={createEmployeeOnOpen}
@@ -169,7 +172,7 @@ export default function TableData() {
           />
 
           <Select
-            className="max-w-xs"
+            className="w-full max-w-xs lg:max-w-xs md:max-w-full sm:max-w-full"
             label="Filter by status"
             size="sm"
             selectedKeys={new Set([statusFilter])}

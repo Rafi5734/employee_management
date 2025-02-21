@@ -5,14 +5,33 @@ import {
   DropdownMenu,
   DropdownItem,
   Avatar,
+  Button,
+  useDisclosure,
 } from "@heroui/react";
 import { Link } from "react-router-dom";
+import MenuIcon from "../../assets/icons/MenuIcon";
+import ResponsiveDrawer from "../responsiveDrawer/ResponsiveDrawer";
 
-export default function NavbarMain() {
+export default function NavbarMain({ size }) {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  console.log("size", size?.width);
   return (
     <nav className="bg-white border border-[#dcdfe2] inter">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+        <Button
+          onPress={onOpen}
+          color="primary"
+          isIconOnly
+          className={`${size?.width < 640 ? "visible" : "hidden"}`}
+        >
+          <MenuIcon />
+        </Button>
+        <ResponsiveDrawer isOpen={isOpen} onOpenChange={onOpenChange} />
+        <Link
+          to="/"
+          className="flex items-center space-x-3 rtl:space-x-reverse"
+        >
           <img
             src="https://www.brotecs.com/wp-content/uploads/2020/02/BroTecs-Logo_noSlogan.png"
             className="h-8"
@@ -33,12 +52,24 @@ export default function NavbarMain() {
               <p className="font-semibold inter">Signed in as</p>
               <p className="font-semibold inter">zoey@example.com</p>
             </DropdownItem>
-            <DropdownItem key="settings" className="inter">My Settings</DropdownItem>
-            <DropdownItem key="team_settings" className="inter">Team Settings</DropdownItem>
-            <DropdownItem key="analytics" className="inter">Analytics</DropdownItem>
-            <DropdownItem key="system" className="inter">System</DropdownItem>
-            <DropdownItem key="configurations" className="inter">Configurations</DropdownItem>
-            <DropdownItem key="help_and_feedback" className="inter">Help & Feedback</DropdownItem>
+            <DropdownItem key="settings" className="inter">
+              My Settings
+            </DropdownItem>
+            <DropdownItem key="team_settings" className="inter">
+              Team Settings
+            </DropdownItem>
+            <DropdownItem key="analytics" className="inter">
+              Analytics
+            </DropdownItem>
+            <DropdownItem key="system" className="inter">
+              System
+            </DropdownItem>
+            <DropdownItem key="configurations" className="inter">
+              Configurations
+            </DropdownItem>
+            <DropdownItem key="help_and_feedback" className="inter">
+              Help & Feedback
+            </DropdownItem>
             <DropdownItem key="logout" color="danger" className="inter">
               Log Out
             </DropdownItem>
